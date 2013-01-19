@@ -1,5 +1,8 @@
 package com.tangpian.sna.service;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,14 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.lucene.analysis.cn.smart.hhmm.HHMMSegmenter;
-import org.apache.lucene.analysis.cn.smart.hhmm.SegToken;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.chenlb.mmseg4j.analysis.ComplexAnalyzer;
 import com.tangpian.sna.dao.PostDao;
 import com.tangpian.sna.model.Post;
 
@@ -77,41 +82,31 @@ public class AnalysisService {
 
 	public List<String> segmentation(String inputstring) {
 		List<String> words = new ArrayList<String>();
+		Reader reader = new StringReader(inputstring);
 
-		// SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer(
-		// Version.LUCENE_29);
-		// Reader reader = new StringReader(inputstring);
-		// TokenStream tokenStream = analyzer.tokenStream(null, reader);
-		//
-		// List<String> words = new ArrayList<String>();
-		//
-		// TermAttribute termAttribute = (TermAttribute) tokenStream
-		// .getAttribute(TermAttribute.class);
-		// words.add(termAttribute.toString());
-		// return words;
+		Analyzer analyzer = new ComplexAnalyzer();
+		
+		
+		TokenStream tokenStream;
+		try {
+			tokenStream = analyzer.tokenStream(null, reader);
+			OffsetAttribute offsetAttribute = tokenStream
+					.addAttribute(OffsetAttribute.class);
+			CharTermAttribute charTermAttribute = tokenStream
+					.addAttribute(CharTermAttribute.class);
 
-		// StringReader reader = new StringReader(inputstring);
-		//
-		// SmartChineseAnalyzer ss = new
-		// SmartChineseAnalyzer(Version.LUCENE_40);
-		//
-		// TokenStream tokenStream = ss.tokenStream("", reader);
-		// try {
-		// while (tokenStream.incrementToken()) {
-		// TermAttribute termAttribute = (TermAttribute) tokenStream
-		// .getAttribute(TermAttribute.class);
-		// words.add(termAttribute.toString());
-		// }
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
-		HHMMSegmenter segmenter = new HHMMSegmenter();
-		List<SegToken> tokens = segmenter.process(inputstring);
-		for (SegToken segToken : tokens) {
-			words.add(new String(segToken.charArray));
+			while (tokenStream.incrementToken()) {
+				int startOffset = offsetAttribute.startOffset();
+				int endOffset = offsetAttribute.endOffset();
+				words.add(charTermAttribute.toString());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+
+		
 		log(words);
 
 		return words;
