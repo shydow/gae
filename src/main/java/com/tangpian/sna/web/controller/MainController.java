@@ -48,11 +48,17 @@ public class MainController {
 
 	}
 	
-	@RequestMapping("analysis")
+	@RequestMapping("words")
 	public String analysis(@RequestParam String profileid, ModelMap model) {
 		LOGGER.info("User Profile id:" + profileid);
-		Map<String, Double> result = analysisService.analysisPosts(profileid);
+		Map<String, Double> result = analysisService.analysisHotWords(profileid);
 		model.put("hotWords", result);
 		return "words";
+	}
+	
+	@RequestMapping("trendency")
+	public String trendency(@RequestParam String profileid, ModelMap model) {
+		model.put("trendency", analysisService.analyzeTrendency(profileid));
+		return "trendency";
 	}
 }

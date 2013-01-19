@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.chenlb.mmseg4j.analysis.ComplexAnalyzer;
 import com.tangpian.sna.dao.PostDao;
 import com.tangpian.sna.model.Post;
+import com.tangpian.sna.utils.ConfigUtil;
 
 @Service
 public class AnalysisService {
@@ -32,7 +35,7 @@ public class AnalysisService {
 	@Autowired
 	private PostDao postDao;
 
-	public Map<String, Double> analysisPosts(String profileId) {
+	public Map<String, Double> analysisHotWords(String profileId) {
 		List<Post> posts = postDao.getPostsByProfileId(profileId);
 		List<String> words = new ArrayList<String>();
 		for (Post post : posts) {
@@ -44,19 +47,26 @@ public class AnalysisService {
 		return hotWords;
 	}
 
+	public Double analyzeTrendency(String profileid) {
+		List<Post> posts = postDao.getPostsByProfileId(profileid);
+		List<String> words = new ArrayList<String>();
+		for (Post post : posts) {
+			words.addAll(segmentation(post.getContent()));
+		}
+		return analyzeContentsTrendency(words);
+	}
+
 	private Map<String, Double> getHotWords(List<String> allWords) {
 		Map<String, Double> map = new HashMap<String, Double>();
 		for (String string : allWords) {
 			if (string.length() <= 1) {
 				continue;
 			}
-			if ("始##始".equals(string) || "末##末".equals(string) || string.contains("#")) {
-				continue;
-			}
+
 			if (map.containsKey(string)) {
-				map.put(string, map.get(string) + 10);
+				map.put(string, map.get(string) + 7);
 			} else {
-				map.put(string, 10.0);
+				map.put(string, 7.0);
 			}
 		}
 
@@ -80,13 +90,21 @@ public class AnalysisService {
 		return hotWords;
 	}
 
+	private String preProcessing(String string) {
+		String regex = "\\<.*?\\>|(@)?(href=')?(HREF=')?(HREF=\")?(href=\")?(http://)?[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?";
+
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(string);
+		return matcher.replaceAll("");
+	}
+
 	public List<String> segmentation(String inputstring) {
+		inputstring = preProcessing(inputstring);
 		List<String> words = new ArrayList<String>();
 		Reader reader = new StringReader(inputstring);
 
 		Analyzer analyzer = new ComplexAnalyzer();
-		
-		
+
 		TokenStream tokenStream;
 		try {
 			tokenStream = analyzer.tokenStream(null, reader);
@@ -104,9 +122,7 @@ public class AnalysisService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 
-		
 		log(words);
 
 		return words;
@@ -118,6 +134,25 @@ public class AnalysisService {
 			LOGGER.info("word:" + word);
 		}
 		LOGGER.info("stop print words!");
+	}
+
+	public static void main(String[] args) {
+		AnalysisService as = new AnalysisService();
+
+		String string = "#听着听着我们就老了 <b>To be Included in our shared circle</b>:<br /><b>Share</b> the circle here: <a href=\"http://goo.gl/bLF7Y\" class=\"ot-anchor\">http://goo.gl/bLF7Y</a>";
+		System.out.println(as.segmentation(string));
+	}
+
+	private double analyzeContentsTrendency(List<String> words) {
+		Map<String, Double> trendencyWordMap = ConfigUtil
+				.initTrendencyWordMap();
+		double score = 0;
+
+		for (String word : words) {
+			score += trendencyWordMap.get(word);
+		}
+
+		return score;
 	}
 
 }

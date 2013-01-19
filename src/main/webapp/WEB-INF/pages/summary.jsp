@@ -25,6 +25,6 @@
 	</section>
 	
 	<hr>
-	<a href="main?profileid=${user.id }">get your post!</a> | <a href="analysis?profileid=${user.id}">Show Your Word Cloud</a>
+	<a href="main?profileid=${user.id }">get your post!</a> | <a href="words?profileid=${user.id}">Show Your Word Cloud</a> | <a href="trendency?profileid=${user.id}">Show Your Trendency</a> 
 </body>
 </html>

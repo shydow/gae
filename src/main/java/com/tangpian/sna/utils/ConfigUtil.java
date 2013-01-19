@@ -1,7 +1,11 @@
 package com.tangpian.sna.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -49,5 +53,28 @@ public class ConfigUtil {
 
 	public static void main(String[] args) {
 		System.out.println(ConfigUtil.getProperty("oauth_client_id"));
+	}
+	
+	private static Map<String, Double> trendencyWordMap;
+	public static Map<String, Double> initTrendencyWordMap() {
+		if ( null == trendencyWordMap) {
+			trendencyWordMap = new HashMap<String, Double>();
+			
+			InputStream input = ConfigUtil.class.getClassLoader().getResourceAsStream("trendency.map");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+			String line;
+			try {
+				while ((line = reader.readLine()) != null) {
+					String[] entry = line.split("\\|");
+					log.info("trendencyWordMap entry:"+ entry[0] + "|" + entry[1]);
+					trendencyWordMap.put(entry[0], Double.parseDouble(entry[1]));
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return trendencyWordMap;		
 	}
 }
