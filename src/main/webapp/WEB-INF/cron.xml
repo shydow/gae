@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+<!-- 	<cron> -->
+<!-- 		<url>/cron/gatherPost</url> -->
+<!-- 		<description>gather infomation every 30 minutes</description> -->
+<!-- 		<schedule>every 77 minutes</schedule> -->
+<!-- 	</cron> -->
+
+<!-- 	<cron> -->
+<!-- 		<url>/cron/gatherReply</url> -->
+<!-- 		<description>gather infomation every 30 minutes</description> -->
+<!-- 		<schedule>every 3 minutes</schedule> -->
+<!-- 	</cron> -->
+
+<!-- 	<cron> -->
+<!-- 		<url>/cron/gather</url> -->
+<!-- 		<description>restart all user gather at 2:00 every day</description> -->
+<!-- 		<schedule>every day 02:00</schedule> -->
+<!-- 	</cron> -->
+
+</cronentries>
