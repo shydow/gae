@@ -149,7 +149,9 @@ public class AnalysisService {
 		double score = 0;
 
 		for (String word : words) {
-			score += trendencyWordMap.get(word);
+			if (trendencyWordMap.containsKey(word)) {
+				score += trendencyWordMap.get(word);
+			}
 		}
 
 		return score;

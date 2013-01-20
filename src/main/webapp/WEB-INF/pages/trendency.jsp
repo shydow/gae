@@ -2,6 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <body>
-	Your Sentiment Score is: ${trendency}
+	Your Sentiment Score is: <span style="color:red;font-weight:bold;font-size:50px;"> ${trendency} </span>
 </body>
 </html>

@@ -21,7 +21,8 @@ public class ConfigUtil {
 	 * @return application configuration properties
 	 */
 	private static Properties getConfig() {
-		InputStream input = ConfigUtil.class.getResourceAsStream(CONFIG_PROPERTIES);
+		InputStream input = ConfigUtil.class
+				.getResourceAsStream(CONFIG_PROPERTIES);
 		Properties config = new Properties();
 		try {
 			config.load(input);
@@ -54,20 +55,25 @@ public class ConfigUtil {
 	public static void main(String[] args) {
 		System.out.println(ConfigUtil.getProperty("oauth_client_id"));
 	}
-	
+
 	private static Map<String, Double> trendencyWordMap;
+
 	public static Map<String, Double> initTrendencyWordMap() {
-		if ( null == trendencyWordMap) {
+		if (null == trendencyWordMap) {
 			trendencyWordMap = new HashMap<String, Double>();
-			
-			InputStream input = ConfigUtil.class.getClassLoader().getResourceAsStream("trendency.map");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-			String line;
+
 			try {
+				InputStream input = ConfigUtil.class.getClassLoader()
+						.getResourceAsStream("trendency.map");
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(input, "UTF-8"));
+				String line;
 				while ((line = reader.readLine()) != null) {
 					String[] entry = line.split("\\|");
-					log.info("trendencyWordMap entry:"+ entry[0] + "|" + entry[1]);
-					trendencyWordMap.put(entry[0], Double.parseDouble(entry[1]));
+					log.info("trendencyWordMap entry:" + entry[0] + "|"
+							+ entry[1]);
+					trendencyWordMap
+							.put(entry[0], Double.parseDouble(entry[1]));
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -75,6 +81,6 @@ public class ConfigUtil {
 			}
 
 		}
-		return trendencyWordMap;		
+		return trendencyWordMap;
 	}
 }
